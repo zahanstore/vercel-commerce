@@ -1,4 +1,4 @@
-// Add this import at the top
+// 1. Ensure this import is at the TOP of the file (with other imports)
 import { getQikinkProducts } from '../qikink'; 
 
 export async function getCollectionProducts({
@@ -400,9 +400,6 @@ export async function getAnalyticsConfig(): Promise<{
     return fallback;
   }
   // lib/fourthwall/index.ts
-// 1. Ensure this import is at the TOP of the file (with other imports)
-import { getQikinkProducts } from '../qikink'; 
-
 // 2. Replace the existing function with this one:
 export async function getCollectionProducts({
   collection,
