@@ -1,4 +1,4 @@
-import { getQikinkProducts } from '../qikink'; // 1. Moved to the very top
+import { getQikinkProducts } from 'lib/qikink';// 1. Moved to the very top
 import { Cart, Collection, Product } from "lib/types";
 import { reshapeCart, reshapeProduct, reshapeProducts } from "./reshape";
 import { FourthwallCart, FourthwallCollection, FourthwallOgImageResponse, FourthwallProduct, FourthwallShop } from "./types";
