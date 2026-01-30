@@ -400,26 +400,37 @@ export async function getAnalyticsConfig(): Promise<{
     return fallback;
   }
   // lib/fourthwall/index.ts
+// 1. Ensure this import is at the TOP of the file (with other imports)
+import { getQikinkProducts } from '../qikink'; 
 
-export async function getCollectionProducts({ 
-  collection, 
-  currency 
-}: { 
-  collection: string; 
-  currency?: string 
-}) {
-  // If the user selects INR, we skip Fourthwall and hit Qikink
+// 2. Replace the existing function with this one:
+export async function getCollectionProducts({
+  collection,
+  reverse,
+  sortKey,
+  currency
+}: {
+  collection: string;
+  reverse?: boolean;
+  sortKey?: string;
+  currency?: string;
+}): Promise<Product[]> {
+  
+  // If the currency is INR, we ignore Fourthwall and fetch from Qikink
   if (currency === 'INR') {
-    return await getQikinkProducts(); 
+    return await getQikinkProducts();
   }
 
-  // Existing Fourthwall fetch logic...
-  const res = await fourthwallFetch({
-    query: YOUR_QUERY,
-    variables: { handle: collection, currency }
-  });
-  
-  return res.body.data.collection.products;
+  // Original Fourthwall fetch logic (Make sure this matches your original file structure)
+  const res = await fourthwallGet<FourthwallProduct[]>(
+    `${API_URL}/collections/${collection}/products`,
+    {
+      sort_key: sortKey,
+      reverse: reverse ? 'true' : 'false',
+      currency: currency
+    }
+  );
+
+  return reshapeProducts(res.body);
 }
   
-}
