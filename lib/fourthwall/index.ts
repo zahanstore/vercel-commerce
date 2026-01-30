@@ -1,3 +1,37 @@
+// Add this import at the top
+import { getQikinkProducts } from '../qikink'; 
+
+export async function getCollectionProducts({
+  collection,
+  reverse,
+  sortKey,
+  currency // Ensure currency is passed here
+}: {
+  collection: string;
+  reverse?: boolean;
+  sortKey?: string;
+  currency?: string;
+}): Promise<Product[]> {
+  
+  // IF THE CURRENCY IS INR, BYPASS FOURTHWALL AND USE QIKINK
+  if (currency === 'INR') {
+    return await getQikinkProducts();
+  }
+
+  // EXISTING FOURTHWALL LOGIC
+  const res = await fourthwallGet<FourthwallProduct[]>(
+    `${API_URL}/collections/${collection}/products`,
+    {
+      sort_key: sortKey,
+      reverse: reverse ? 'true' : 'false',
+      currency: currency // Pass currency to Fourthwall for USD/EUR/etc.
+    }
+  );
+
+  return reshapeProducts(res.body);
+}
+
+
 import { Cart, Collection, Product } from "lib/types";
 import { reshapeCart, reshapeProduct, reshapeProducts } from "./reshape";
 import { FourthwallCart, FourthwallCollection, FourthwallOgImageResponse, FourthwallProduct, FourthwallShop } from "./types";
@@ -365,4 +399,27 @@ export async function getAnalyticsConfig(): Promise<{
   } catch {
     return fallback;
   }
+  // lib/fourthwall/index.ts
+
+export async function getCollectionProducts({ 
+  collection, 
+  currency 
+}: { 
+  collection: string; 
+  currency?: string 
+}) {
+  // If the user selects INR, we skip Fourthwall and hit Qikink
+  if (currency === 'INR') {
+    return await getQikinkProducts(); 
+  }
+
+  // Existing Fourthwall fetch logic...
+  const res = await fourthwallFetch({
+    query: YOUR_QUERY,
+    variables: { handle: collection, currency }
+  });
+  
+  return res.body.data.collection.products;
+}
+  
 }
